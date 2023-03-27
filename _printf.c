@@ -1,61 +1,33 @@
-#include "main.h"
-
-#include <stdarg.h>
 #include <stdio.h>
+#include <stdarg.h>
 
-/**
- * _printf - produces output according to a format
- * @format: character string containing directives
- *
- * Return: number of characters printed (excluding the null byte used to end output to strings)
- */
-int _printf(const char *format, ...)
-{
-	int count = 0;
-	va_list args;
-	int i;
+int _printf(const char *format, ...) {
+    va_list arg_list;
+    int printed_chars = 0;
 
-	va_start(args, format);
-	
-	for (i = 0; format && format[i] != '\0'; i++)
-	{
-		if (format[i] != '%')
-	{
-		_putchar(format[i]);
-			count++;
-			continue;
-	}
+    va_start(arg_list, format);
 
-		i++;
+    for (; *format != '\0'; format++) {
+        if (*format == '%') {
+            format++;
+            switch (*format) {
+                case 'c':
+                    printed_chars += printf("%c", va_arg(arg_list, int));
+                    break;
+                case 's':
+                    printed_chars += printf("%s", va_arg(arg_list, char *));
+                    break;
+                case '%':
+                    printed_chars += printf("%%");
+                    break;
+            }
+        } else {
+            putchar(*format);
+            printed_chars++;
+        }
+    }
 
-	if (format[i] == '%')
-	{
-			_putchar('%');
-			count++;
-				continue;
-	}
-	if (format[i] == 'c')
-	{
-		char c = (char)va_arg(args, int);
-			_putchar(c);
-			count++;
-			continue;
-	}
+    va_end(arg_list);
 
-	if (format[i] == 's')
-		{
-			char *str = va_arg(args, char*);
-			while (str && *str != '\0')
-		{
-			_putchar(*str);
-			str++;
-			count++;
-		}
-			continue;
-		}	
-	}
-	va_end(args);
-
-
-	return (count);
+    return printed_chars;
 }
